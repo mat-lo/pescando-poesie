@@ -1,18 +1,34 @@
 const fs = require("fs")
-const filter = "Alba"
-const drops = ["alba", "l'alba", "sull'alba"]
+const filters = [
+  "Alba",
+  "Al crepuscolo",
+  "All'alba",
+  "Alla sera",
+  "Crepuscolo",
+  "Di notte",
+]
+const allDrops = {
+  alba: ["alba", "l'alba", "sull'alba"],
+  alcrepuscolo: ["crepuscolo", "il crepuscolo", "al crepuscolo"],
+  allalba: ["le prime luci", "al giorno nascente", "all'alba"],
+  allasera: ["la sera", "di sera", "alla sera"],
+  crepuscolo: ["crepuscolo", "al crepuscolo", "nel crepuscolo"],
+  dinotte: ["di notte", "la notte", "alla notte", "nel buio"],
+}
+const drops = allDrops.dinotte
 const vowels = ["a", "e", "i", "o", "u"]
 const outPath = "./out.txt"
+const count = 5
 
-fs.readFile("source.txt", "utf8", function (err, data) {
+fs.readFile("src.txt", "utf8", function (err, data) {
   if (err) throw err
 
   const sentences = data.split("$")
   const filtered = sentences.filter(function (str) {
-    return str.includes(filter) === false
+    return str.includes(filters[count]) === false
   })
   const rest = sentences.filter(function (str) {
-    return str.includes(filter)
+    return str.includes(filters[count])
   })
 
   const synthetics = []
