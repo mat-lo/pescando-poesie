@@ -6,6 +6,21 @@ const filters = [
   "Alla sera",
   "Crepuscolo",
   "Di notte",
+  "Il mattino",
+  "Mattino",
+  "Mezzodì",
+  "Mezzogiorno",
+  "Notte",
+  "Sera",
+  "Il Lago",
+  "Lago di Mezzo",
+  "Mantova",
+  "Bollente",
+  "Caldo",
+  "Freddo",
+  "Fresco",
+  "Gelido",
+  "Tiepido",
 ]
 const allDrops = {
   alba: ["alba", "l'alba", "sull'alba"],
@@ -14,11 +29,31 @@ const allDrops = {
   allasera: ["la sera", "di sera", "alla sera"],
   crepuscolo: ["crepuscolo", "al crepuscolo", "nel crepuscolo"],
   dinotte: ["di notte", "la notte", "alla notte", "nel buio"],
+  ilmattino: ["il mattino", "al mattino", "un mattino"],
+  mattino: ["mattino", "il mattino", "al mattino"],
+  mezzodi: ["mezzodì", "di mezzodì", "al mezzodì"],
+  mezzogiorno: ["mezzogiorno", "di mezzogiorno", "a mezzogiorno"],
+  notte: ["notte", "di notte", "la notte"],
+  sera: ["sera", "la sera", "di sera"],
+  illago: ["il lago", "dal lago", "lago", "laghi", "i laghi", "un lago"],
+  lagodimezzo: [
+    "Lago di Mezzo",
+    "al Lago di Mezzo",
+    "il Lago di Mezzo",
+    "nel Lago di Mezzo",
+  ],
+  mantova: ["Mantova", "a Mantova", "di Mantova", "per Mantova"],
+  bollente: ["bollente", "il bollente", "un bollente"],
+  caldo: ["caldo", "il caldo", "un caldo", "una calda", "la calda"],
+  freddo: ["freddo", "il freddo", "un freddo", "una fredda", "la fredda"],
+  fresco: ["fresco", "il fresco", "un fresco", "una fresca", "la fresca"],
+  gelido: ["gelido", "il gelido", "un gelido", "una gelida", "la gelida"],
+  tiepido: ["tiepido", "il tiepido", "un tiepido", "una tiepida", "la tiepida"],
 }
-const drops = allDrops.dinotte
+const drops = allDrops.tiepido
 const vowels = ["a", "e", "i", "o", "u"]
 const outPath = "./out.txt"
-const count = 5
+const count = 20
 
 fs.readFile("src.txt", "utf8", function (err, data) {
   if (err) throw err
