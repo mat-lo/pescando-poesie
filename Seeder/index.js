@@ -1,4 +1,27 @@
 const fs = require("fs")
+const files = [
+  "time/alba",
+  "time/alcrepuscolo",
+  "time/allalba",
+  "time/allasera",
+  "time/crepuscolo",
+  "time/dinotte",
+  "time/ilmattino",
+  "time/mattino",
+  "time/mezzodi",
+  "time/mezzogiorno",
+  "time/notte",
+  "time/sera",
+  "loc/illago",
+  "loc/lagodimezzo",
+  "loc/mantova",
+  "temp/bollente",
+  "temp/caldo",
+  "temp/freddo",
+  "temp/fresco",
+  "temp/gelido",
+  "temp/tiepido",
+]
 const filters = [
   "Alba",
   "Al crepuscolo",
@@ -59,6 +82,8 @@ fs.readFile("src.txt", "utf8", function (err, data) {
   if (err) throw err
 
   const sentences = data.split("$")
+
+  // split in two
   const filtered = sentences.filter(function (str) {
     return str.includes(filters[count]) === false
   })
