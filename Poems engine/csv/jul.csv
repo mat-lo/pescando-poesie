@@ -1,4 +1,4 @@
-Date,Clorofilla a,Clorofilla in tensione,Cond. Spec. 25 ｰC,LDO,LDO % Sat,pH,Redox,Temp Acqua,
+fullDate,ClorofA,ClorofTens,CondSpec,LDO,LDOPerc,pH,Redox,TempAcqua,
 2019-07-04T00:00:00,32.8,0.55634,371,9.37,118.6,7.86,313,27.31,
 2019-07-04T00:15:00,32.7,0.55373,371,9.22,116.8,7.83,315,27.3,
 2019-07-04T00:30:00,32,0.54303,369,9.51,120.5,7.87,314,27.29,

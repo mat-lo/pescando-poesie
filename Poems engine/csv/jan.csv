@@ -1,4 +1,4 @@
-Date,ClorofA,ClorofTens,CondSpec,LDO,LDOPerc,pH,Redox,TempAcqua,
+fullDate,ClorofA,ClorofTens,CondSpec,LDO,LDOPerc,pH,Redox,TempAcqua,
 2020-01-23T00:00:00,4.7,0.08026,431,11.07,89.3,7.69,337,6.84,
 2020-01-23T00:15:00,6.4,0.10621,431,11.05,89.2,7.67,337,6.84,
 2020-01-23T00:30:00,5.6,0.09457,431,10.97,88.5,7.66,338,6.83,

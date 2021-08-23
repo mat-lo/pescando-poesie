@@ -5,6 +5,7 @@
   "author": "Matteo Loglio",
   "license": "MIT",
   "dependencies": {
-    "fast-csv": "^4.3.6"
+    "fast-csv": "^4.3.6",
+    "node-p5": "^1.0.4"
   }
 }
