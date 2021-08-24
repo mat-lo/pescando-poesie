@@ -16,15 +16,14 @@ const bannedChars = [".", ":", ",", ";"]
 
 const txtToList = async (src) => {
   const result = await readFile(src, "utf8")
-  // remove last dot
-  // make all lowercase
   const lines = result.split("\n")
   const newLines = []
   lines.forEach((line) => {
     if (bannedChars.some((v) => line.slice(-1) === v)) {
       line = line.slice(0, -1)
     }
-    newLines.push(line)
+    const lowerLine = lowerFirstLetter(line)
+    newLines.push(lowerLine)
   })
   return newLines
 }
@@ -48,6 +47,14 @@ linesSrc.forEach((src) => {
   srcPromises.push(txtToList(`lines/${src}.txt`))
 })
 
+const lowerFirstLetter = (string) => {
+  return string.charAt(0).toLowerCase() + string.slice(1)
+}
+
+const upperFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 Promise.all(srcPromises).then((values) => {
   const lines = {
     hot: values[0],
@@ -63,37 +70,17 @@ Promise.all(srcPromises).then((values) => {
     misc: values[10],
   }
 
-  console.log(lines.misc)
+  fs.createReadStream(path.resolve(__dirname, "csv", "jan.csv"))
+    .pipe(csv.parse({ headers: true }))
+    .on("error", (error) => console.error(error))
+    .on("data", (row) => {
+      jan.push(row)
+    })
+    .on("end", (rowCount) => {
+      console.log(`Parsed ${rowCount} rows`)
+      randomLine(jan)
+    })
 })
-
-// const main = async () => {
-//   const d = await txtToList("lines/temp/hot.txt")
-//   console.log(d)
-// }
-
-// main()
-
-// await txtToList("lines/temp/hot.txt").then((r) => {
-//   hot = r
-//   console.log(r)
-// })
-
-// fillVars().then(console.log(hot))
-
-// console.log(txtToList("lines/temp/hot.txt"))
-
-// console.log(listToVar("lines/temp/hot.txt"))
-
-// fs.createReadStream(path.resolve(__dirname, "csv", "jan.csv"))
-//   .pipe(csv.parse({ headers: true }))
-//   .on("error", (error) => console.error(error))
-//   .on("data", (row) => {
-//     jan.push(row)
-//   })
-//   .on("end", (rowCount) => {
-//     console.log(`Parsed ${rowCount} rows`)
-//     // randomLine(jan)
-//   })
 
 const randomLine = (lines) => {
   const line = lines[~~(Math.random() * lines.length)]
