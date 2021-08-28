@@ -55,6 +55,88 @@ const upperFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
+const getRandomItem = (array) => {
+  return array[~~(Math.random() * array.length)]
+}
+
+const getTimeVerse = (hours, lines) => {
+  if (hours > 21 || hours <= 4) {
+    return getRandomItem(lines.notte)
+  }
+  if (hours > 4 && hours <= 11) {
+    return getRandomItem(lines.mattino)
+  }
+  if (hours > 11 && hours <= 17) {
+    return getRandomItem(lines.mezzo)
+  }
+  if (hours > 17 && hours <= 21) {
+    return getRandomItem(lines.sera)
+  }
+}
+
+const getTempVerse = (temp, lines) => {
+  if (temp < 10) {
+    return getRandomItem(lines.cold)
+  }
+  if (temp > 15 && temp < 27) {
+    return getRandomItem(lines.mid)
+  }
+  if (temp >= 27) {
+    return getRandomItem(lines.hot)
+  }
+}
+
+const getLocation = (lines) => {
+  const r = Math.random()
+  if (r < 0.33) {
+    return getRandomItem(lines.lagodimezzo)
+  }
+  if (r < 0.66 && r >= 0.33) {
+    return getRandomItem(lines.lago)
+  }
+  if (r >= 0.66) {
+    return getRandomItem(lines.mantova)
+  }
+}
+
+const getMisc = (lines) => {
+  return getRandomItem(lines.misc)
+}
+
+const getVerses = (hours, TempAcqua, lines) => {
+  const verses = []
+  verses.push(getTimeVerse(hours, lines))
+  verses.push(getTempVerse(TempAcqua, lines))
+  if (Math.random() < Math.random()) {
+    verses.push(getLocation(lines))
+  } else {
+    verses.push(getMisc(lines))
+  }
+  verses.push(getMisc(lines))
+  while (Math.random() < 0.4 && verses.length < 7) {
+    verses.push(getMisc(lines))
+  }
+  return shuffle(verses)
+}
+
+const shuffle = (array) => {
+  let currentIndex = array.length,
+    randomIndex
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex--
+
+    // And swap it with the current element.
+    ;[array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ]
+  }
+  return array
+}
+
 Promise.all(srcPromises).then((values) => {
   const lines = {
     hot: values[0],
@@ -78,19 +160,45 @@ Promise.all(srcPromises).then((values) => {
     })
     .on("end", (rowCount) => {
       console.log(`Parsed ${rowCount} rows`)
-      randomLine(jan)
+      generatePoem(jan, lines, "./jan.txt")
+    })
+
+  fs.createReadStream(path.resolve(__dirname, "csv", "jul.csv"))
+    .pipe(csv.parse({ headers: true }))
+    .on("error", (error) => console.error(error))
+    .on("data", (row) => {
+      jul.push(row)
+    })
+    .on("end", (rowCount) => {
+      console.log(`Parsed ${rowCount} rows`)
+      generatePoem(jul, lines, "./jul.txt")
     })
 })
 
-const randomLine = (lines) => {
-  const line = lines[~~(Math.random() * lines.length)]
-  const { fullDate, ClorofA, pH, TempAcqua } = line
+const generatePoem = (rows, lines, out) => {
+  const row = getRandomItem(rows)
+  const { fullDate, ClorofA, pH, TempAcqua } = row
   const date = new Date(fullDate)
+  const hours = date.getHours()
+
+  const poems = []
+
+  for (let i = 0; i < 1000; i++) {
+    const poem = getVerses(hours, TempAcqua, lines)
+    // poem.push("\n")
+    const p = poem.join("@@")
+    poems.push(p)
+  }
+
+  // generate new file
+  fs.writeFile(out, poems.join("%^&"), function (err) {
+    if (err) return console.log(err)
+  })
 
   const sentences = [
     `Questa fu scritta il giorno ${date.getDate()} ${
       date.getMonth() === 0 ? "Gennnaio" : "Agosto"
-    } alle ${date.getHours()}:${date.getMinutes()}. La temperatura`,
+    } alle ${hours}:${date.getMinutes()}. La temperatura`,
     `era di ${TempAcqua}°, mentre la Clorofilla A era ${ClorofA}ug/l e il pH ${pH}. `,
   ]
 
