@@ -7,12 +7,7 @@ const p5 = require("node-p5")
 const cbook = p5.loadFont({ path: "./fonts/cbook.otf", family: "CBook" })
 const cbold = p5.loadFont({ path: "./fonts/cbold.otf", family: "CBold" })
 
-const jan = []
-const jul = []
-
 const bannedChars = [".", ":", ",", ";"]
-
-// Date,ClorofA,ClorofTens,CondSpec,LDO,LDOPerc,pH,Redox,TempAcqua
 
 const txtToList = async (src) => {
   const result = await readFile(src, "utf8")
@@ -137,55 +132,51 @@ const shuffle = (array) => {
   return array
 }
 
-Promise.all(srcPromises).then((values) => {
-  const lines = {
-    hot: values[0],
-    cold: values[1],
-    mid: values[2],
-    lago: values[3],
-    mantova: values[4],
-    lagodimezzo: values[5],
-    mattino: values[6],
-    mezzo: values[7],
-    notte: values[8],
-    sera: values[9],
-    misc: values[10],
-  }
+const generatePoemsTxt = (srcCsv, outPath, n) => {
+  // read all the src files
+  Promise.all(srcPromises).then((values) => {
+    const lines = {
+      hot: values[0],
+      cold: values[1],
+      mid: values[2],
+      lago: values[3],
+      mantova: values[4],
+      lagodimezzo: values[5],
+      mattino: values[6],
+      mezzo: values[7],
+      notte: values[8],
+      sera: values[9],
+      misc: values[10],
+    }
 
-  fs.createReadStream(path.resolve(__dirname, "csv", "jan.csv"))
-    .pipe(csv.parse({ headers: true }))
-    .on("error", (error) => console.error(error))
-    .on("data", (row) => {
-      jan.push(row)
-    })
-    .on("end", (rowCount) => {
-      console.log(`Parsed ${rowCount} rows`)
-      generatePoem(jan, lines, "./jan.txt")
-    })
+    const rows = []
 
-  fs.createReadStream(path.resolve(__dirname, "csv", "jul.csv"))
-    .pipe(csv.parse({ headers: true }))
-    .on("error", (error) => console.error(error))
-    .on("data", (row) => {
-      jul.push(row)
-    })
-    .on("end", (rowCount) => {
-      console.log(`Parsed ${rowCount} rows`)
-      generatePoem(jul, lines, "./jul.txt")
-    })
-})
+    fs.createReadStream(path.resolve(__dirname, "csv", srcCsv))
+      .pipe(csv.parse({ headers: true }))
+      .on("error", (error) => console.error(error))
+      .on("data", (row) => {
+        rows.push(row)
+      })
+      .on("end", (rowCount) => {
+        console.log(`Parsed ${rowCount} rows`)
+        generatePoem(rows, lines, outPath, n)
+      })
+  })
+}
 
-const generatePoem = (rows, lines, out) => {
-  const row = getRandomItem(rows)
-  const { fullDate, ClorofA, pH, TempAcqua } = row
-  const date = new Date(fullDate)
-  const hours = date.getHours()
-
+const generatePoem = (rows, lines, out, n) => {
   const poems = []
 
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < n; i++) {
+    const row = getRandomItem(rows)
+    const { fullDate, TempAcqua, ClorofA, pH } = row
+    const date = new Date(fullDate)
+    const hours = date.getHours()
+
     const poem = getVerses(hours, TempAcqua, lines)
-    // poem.push("\n")
+    poem.push(
+      `${date.getDate()}*${date.getMonth()}*${hours}*${date.getMinutes()}*${TempAcqua}*${ClorofA}*${pH}`
+    )
     const p = poem.join("@@")
     poems.push(p)
   }
@@ -194,12 +185,34 @@ const generatePoem = (rows, lines, out) => {
   fs.writeFile(out, poems.join("%^&"), function (err) {
     if (err) return console.log(err)
   })
+}
 
-  const sentences = [
-    `Questa fu scritta il giorno ${date.getDate()} ${
-      date.getMonth() === 0 ? "Gennnaio" : "Agosto"
-    } alle ${hours}:${date.getMinutes()}. La temperatura`,
-    `era di ${TempAcqua}°, mentre la Clorofilla A era ${ClorofA}ug/l e il pH ${pH}. `,
+// const generateTicket = (poem) => {
+const generateTicket = () => {
+  const poem = [
+    "e d'aurei tristi vicini",
+    "il Lago nostra a morte",
+    "sopporta, un freddo",
+    "i miei son caduti",
+    "«Sí come i notte bei",
+    "4*6*17*30*27.69*36.7*8.25",
+  ]
+
+  const data = poem[poem.length - 1]
+  const vals = data.split("*")
+  const day = vals[0]
+  const month = vals[1]
+  const hours = vals[2]
+  const minutes = vals[3]
+  const temp = vals[4]
+  const clorof = vals[5]
+  const ph = vals[6]
+
+  const footerText = [
+    `Questa fu scritta il giorno ${day} ${
+      month === 0 ? "Gennnaio" : "Luglio"
+    } alle ${hours}:${minutes}. La temperatura`,
+    `era di ${temp}°, mentre la Clorofilla A era ${clorof}ug/l e il pH ${ph}. `,
   ]
 
   const sketch = (p) => {
@@ -212,11 +225,20 @@ const generatePoem = (rows, lines, out) => {
       }, 100)
     }
     p.draw = () => {
-      p.background(50)
+      p.background(255)
+
+      // header
       p.textFont(cbold, 36)
-      p.text(sentences, 50, 100)
+      p.text("pescando", 50, 100)
+      p.text("poesie", 50, 100)
+
+      p.text(footerText, 50, 100)
     }
   }
 
-  // let p5Instance = p5.createSketch(sketch)
+  let p5Instance = p5.createSketch(sketch)
 }
+
+// main
+// generatePoemsTxt("jan.csv", "./jan.txt", 1000)
+generateTicket()
