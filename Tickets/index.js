@@ -7,6 +7,18 @@ const p5 = require("node-p5")
 const cbook = p5.loadFont({ path: "./fonts/cbook.otf", family: "CBook" })
 const cbold = p5.loadFont({ path: "./fonts/cbold.otf", family: "CBold" })
 
+var poemsVar = require("./poems")
+
+const resourcesToPreload = {
+  waveImg: p5.loadImage("./images/wave.png"),
+  bait: p5.loadImage("./images/bait.png"),
+  footwave: p5.loadImage("./images/footwave.png"),
+  arrow: p5.loadImage("./images/arrow.png"),
+  logo: p5.loadImage("./images/logo.png"),
+}
+
+console.log(resourcesToPreload)
+
 const bannedChars = [".", ":", ",", ";"]
 
 const txtToList = async (src) => {
@@ -188,16 +200,7 @@ const generatePoem = (rows, lines, out, n) => {
 }
 
 // const generateTicket = (poem) => {
-const generateTicket = () => {
-  const poem = [
-    "e d'aurei tristi vicini",
-    "il Lago nostra a morte",
-    "sopporta, un freddo",
-    "i miei son caduti",
-    "«Sí come i notte bei",
-    "4*6*17*30*27.69*36.7*8.25",
-  ]
-
+const generateTicket = (poem, outPath) => {
   const data = poem[poem.length - 1]
   const vals = data.split("*")
   const day = vals[0]
@@ -208,37 +211,157 @@ const generateTicket = () => {
   const clorof = vals[5]
   const ph = vals[6]
 
-  const footerText = [
-    `Questa fu scritta il giorno ${day} ${
-      month === 0 ? "Gennnaio" : "Luglio"
-    } alle ${hours}:${minutes}. La temperatura`,
-    `era di ${temp}°, mentre la Clorofilla A era ${clorof}ug/l e il pH ${ph}. `,
-  ]
-
-  const sketch = (p) => {
-    p.setup = () => {
-      let canvas = p.createCanvas(639, 1772)
-      setTimeout(() => {
-        p.saveCanvas(canvas, "myCanvas", "png").then((filename) => {
-          console.log(`saved the canvas as ${filename}`)
-        })
-      }, 100)
+  const sketch = (p, preloaded) => {
+    const write = (what, x, y, r) => {
+      p.push()
+      p.translate(x, y - 10)
+      p.rotate(p.radians(r))
+      p.text(what, 0, 0)
+      p.pop()
     }
-    p.draw = () => {
+
+    const footpara = (array, x, y, r, linea) => {
+      p.push()
+      p.translate(x, y)
+      p.rotate(p.radians(r))
+      array.forEach((string, i) => {
+        p.text(string, 0, i * 38)
+      })
+      if (linea) {
+        p.noFill()
+        p.stroke(255)
+        p.strokeWeight(4)
+        p.line(255, 267, 490, 267)
+        p.noStroke()
+        p.fill(255)
+      }
+      p.pop()
+    }
+
+    p.setup = () => {
+      const waveImg = preloaded.waveImg
+      const bait = preloaded.bait
+      const footwave = preloaded.footwave
+      const arrow = preloaded.arrow
+      const logo = preloaded.logo
+
+      const wave = (x, y) => {
+        p.push()
+        p.translate(x, y)
+        p.rotate(p.radians(p.random(-7, 7)))
+        p.image(waveImg, 0, 0, 102, 11)
+        p.pop()
+      }
+
+      let canvas = p.createCanvas(639, 2092)
+
       p.background(255)
+      p.textAlign(p.LEFT, p.TOP)
 
       // header
-      p.textFont(cbold, 36)
-      p.text("pescando", 50, 100)
-      p.text("poesie", 50, 100)
+      p.fill(0)
+      p.textFont(cbold, 90)
+      write("pescando", 150, 37, p.random(-4, 4))
+      write("poesie", 310, 174, p.random(-4, 4))
+      p.image(bait, 42, 0, 82, 339)
+      wave(p.random(30, p.width - 130), 344)
 
-      p.text(footerText, 50, 100)
+      // poems
+      const n = poem.length - 1
+      const hspace = 750 / n
+      if (n < 5) {
+        wave(
+          p.random(20, p.width - 150),
+          450 + ~~p.random(n - 1) * hspace + hspace * 0.5
+        )
+      }
+
+      p.textSize(35)
+      for (let i = 0; i < n; i++) {
+        const w = p.textWidth(poem[i])
+        const x = p.random(20, p.width - w - 20)
+        const y = 450 + i * hspace
+
+        p.fill(0)
+
+        //close left
+        if (x > 200) {
+          if (Math.random() > 0.5) {
+            wave(p.random(50, 80), y)
+          }
+        }
+
+        //close right
+        if (p.width - w - x > 200) {
+          if (Math.random() > 0.5) {
+            wave(p.random(p.width - 190, p.width - 150), y)
+          }
+        }
+
+        write(poem[i].toLowerCase(), x, y, p.random(-4, 4))
+      }
+
+      // footer
+      p.image(footwave, 0, 1150, p.width, 11)
+      p.fill(0)
+      p.rect(0, 1160, p.width, p.height - 1160)
+      p.image(arrow, 38, 1200, 33, 29)
+
+      const h1 = [
+        "Questi versi non sono scritti da un",
+        "essere umano, bensì dal lago di",
+        "Mantova. Con l’intelligenza artificiale",
+        "abbiamo insegnato ai laghi a scrivere",
+        "trasformando dati ambientali",
+        "in poesia.",
+      ]
+
+      const h2 = [
+        `Questa fu scritta il giorno 7 Agosto alle`,
+        `${hours}:${minutes}. La temperatura era di ${temp}°,`,
+        `mentre la Clorofilla A era ${clorof} ug/l`,
+        `e il pH ${ph}. Questi valori hanno ispirato il`,
+        `lago nella scrittura della poesia.`,
+        `Com’è possibile?`,
+        `Leggilo sul sito → oio.studio/pesca`,
+      ]
+
+      const h3 = [
+        "Pescando Poesie è un progetto di",
+        "Matteo Loglio con oio per",
+        "Edizioni Corraini, durante il",
+        "Festivaletteratura 2021.",
+        "I dati sono forniti dal CNR.",
+      ]
+
+      p.fill(255)
+      p.textSize(30)
+      footpara(h1, 80, 1205, p.random(-2, 2), false)
+      footpara(h2, 28, 1470, -1, true)
+      footpara(h3, 20, 1770, p.random(-2, 2), false)
+
+      // logos
+      p.image(logo, 10, 2030, 369, 38)
+      p.textSize(55)
+      write("ø", p.width - 150, 2020, p.random(-10, 10))
+      write("i", p.width - 95, 2020, p.random(-10, 10))
+      write("o", p.width - 55, 2020, p.random(-10, 10))
+
+      p.saveCanvas(canvas, outPath, "png")
+        .then((f) => {
+          console.log(`saved canvas as ${f}`)
+        })
+        .catch(console.error)
+
+      p.noLoop()
     }
   }
-
-  let p5Instance = p5.createSketch(sketch)
+  const p5Instance = p5.createSketch(sketch, resourcesToPreload)
 }
 
 // main
+
 // generatePoemsTxt("jan.csv", "./jan.txt", 1000)
-generateTicket()
+const poemsAll = poemsVar.poemsAll
+poemsAll.forEach((poem, i) => generateTicket(poem, `./out/${i}`))
+// generateTicket(poemsAll[70], `./out/ano`)
