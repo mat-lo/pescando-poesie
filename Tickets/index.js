@@ -17,8 +17,6 @@ const resourcesToPreload = {
   logo: p5.loadImage("./images/logo.png"),
 }
 
-console.log(resourcesToPreload)
-
 const bannedChars = [".", ":", ",", ";"]
 
 const txtToList = async (src) => {
@@ -225,13 +223,13 @@ const generateTicket = (poem, outPath) => {
       p.translate(x, y)
       p.rotate(p.radians(r))
       array.forEach((string, i) => {
-        p.text(string, 0, i * 38)
+        p.text(string, 0, i * 36)
       })
       if (linea) {
         p.noFill()
         p.stroke(255)
         p.strokeWeight(4)
-        p.line(255, 267, 490, 267)
+        p.line(240, 255, 460, 255)
         p.noStroke()
         p.fill(255)
       }
@@ -261,10 +259,10 @@ const generateTicket = (poem, outPath) => {
       // header
       p.fill(0)
       p.textFont(cbold, 90)
-      write("pescando", 150, 37, p.random(-4, 4))
-      write("poesie", 310, 174, p.random(-4, 4))
-      p.image(bait, 42, 0, 82, 339)
-      wave(p.random(30, p.width - 130), 344)
+      write("pescando", 140, 37, p.random(-4, 4))
+      write("poesie", 270, 154, p.random(-4, 4))
+      p.image(bait, 32, 0, 82, 339)
+      wave(p.random(20, p.width - 140), 364)
 
       // poems
       const n = poem.length - 1
@@ -279,7 +277,7 @@ const generateTicket = (poem, outPath) => {
       p.textSize(35)
       for (let i = 0; i < n; i++) {
         const w = p.textWidth(poem[i])
-        const x = p.random(20, p.width - w - 20)
+        const x = p.random(10, p.width - w - 40)
         const y = 450 + i * hspace
 
         p.fill(0)
@@ -287,7 +285,7 @@ const generateTicket = (poem, outPath) => {
         //close left
         if (x > 200) {
           if (Math.random() > 0.5) {
-            wave(p.random(50, 80), y)
+            wave(p.random(30, 60), y)
           }
         }
 
@@ -305,7 +303,7 @@ const generateTicket = (poem, outPath) => {
       p.image(footwave, 0, 1150, p.width, 11)
       p.fill(0)
       p.rect(0, 1160, p.width, p.height - 1160)
-      p.image(arrow, 38, 1200, 33, 29)
+      p.image(arrow, 18, 1220, 33, 29)
 
       const h1 = [
         "Questi versi non sono scritti da un",
@@ -317,7 +315,9 @@ const generateTicket = (poem, outPath) => {
       ]
 
       const h2 = [
-        `Questa fu scritta il giorno 7 Agosto alle`,
+        `Questa fu scritta il giorno ${day} ${
+          month === 0 ? "Gennnaio" : "Luglio"
+        } alle`,
         `${hours}:${minutes}. La temperatura era di ${temp}°,`,
         `mentre la Clorofilla A era ${clorof} ug/l`,
         `e il pH ${ph}. Questi valori hanno ispirato il`,
@@ -335,17 +335,17 @@ const generateTicket = (poem, outPath) => {
       ]
 
       p.fill(255)
-      p.textSize(30)
-      footpara(h1, 80, 1205, p.random(-2, 2), false)
-      footpara(h2, 28, 1470, -1, true)
-      footpara(h3, 20, 1770, p.random(-2, 2), false)
+      p.textSize(28)
+      footpara(h1, 65, 1230, p.random(-2, 2), false)
+      footpara(h2, 28, 1490, -1, true)
+      footpara(h3, 20, 1790, p.random(-1.5, 1.5), false)
 
       // logos
-      p.image(logo, 10, 2030, 369, 38)
+      p.image(logo, 15, 2030, 369, 38)
       p.textSize(55)
-      write("ø", p.width - 150, 2020, p.random(-10, 10))
-      write("i", p.width - 95, 2020, p.random(-10, 10))
-      write("o", p.width - 55, 2020, p.random(-10, 10))
+      write("ø", p.width - 170, 2020, p.random(-10, 10))
+      write("i", p.width - 115, 2020, p.random(-10, 10))
+      write("o", p.width - 75, 2020, p.random(-10, 10))
 
       p.saveCanvas(canvas, outPath, "png")
         .then((f) => {
