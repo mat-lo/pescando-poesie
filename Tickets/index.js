@@ -313,10 +313,9 @@ const generateTicket = (poem, outPath) => {
         "trasformando dati ambientali",
         "in poesia.",
       ]
-
       const h2 = [
         `Questa fu scritta il giorno ${day} ${
-          month === 0 ? "Gennnaio" : "Luglio"
+          month === "0" ? "Gennnaio" : "Luglio"
         } alle`,
         `${hours}:${minutes}. La temperatura era di ${temp}°,`,
         `mentre la Clorofilla A era ${clorof} ug/l`,
@@ -364,4 +363,4 @@ const generateTicket = (poem, outPath) => {
 // generatePoemsTxt("jan.csv", "./jan.txt", 1000)
 const poemsAll = poemsVar.poemsAll
 poemsAll.forEach((poem, i) => generateTicket(poem, `./out/${i}`))
-// generateTicket(poemsAll[70], `./out/ano`)
+// generateTicket(poemsAll[10], `./out/ano`)
