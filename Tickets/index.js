@@ -4,10 +4,9 @@ const path = require("path")
 const csv = require("fast-csv")
 const p5 = require("node-p5")
 
-const cbook = p5.loadFont({ path: "./fonts/cbook.otf", family: "CBook" })
 const cbold = p5.loadFont({ path: "./fonts/cbold.otf", family: "CBold" })
 
-var poemsVar = require("./poems")
+var poemsVar = require("./shortlist")
 
 const resourcesToPreload = {
   waveImg: p5.loadImage("./images/wave.png"),
