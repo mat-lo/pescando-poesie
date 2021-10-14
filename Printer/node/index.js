@@ -1,4 +1,6 @@
-const RPiGPIOButtons = require("rpi-gpio-buttons")
+const minutes = 2
+const the_interval = minutes * 60 * 1000
+
 const { exec } = require("child_process")
 
 const N = 1820
@@ -25,20 +27,7 @@ const print = () => {
 
 print()
 
-let buttons = new RPiGPIOButtons({
-  pins: [2],
-})
+setInterval(() => {
+  print()
+}, the_interval)
 
-buttons.on("clicked", (pin) => {
-  switch (pin) {
-    case 2:
-      console.log("press!")
-      print()
-      break
-  }
-})
-
-buttons.init().catch((error) => {
-  console.log("ERROR", error.stack)
-  process.exit(1)
-})
